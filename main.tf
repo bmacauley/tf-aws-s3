@@ -30,7 +30,7 @@ resource "aws_s3_bucket" "b" {
 
 # data
 data "template_file" "bucket-policy-aes256" {
-  template = "${file("../bucket_policies/bucket-policy-aes256.tpl")}"
+  template = "${file("${path.module}/bucket_policies/bucket-policy-aes256.tpl")}"
   vars {
     bucket_name = "${aws_s3_bucket.b.bucket}"
   }

@@ -4,6 +4,12 @@ All notable changes to tf-aws-s3 will be documented in this file. The format is 
 
 
 ## v0.1
-
+* Set bucket policy
+* Set ACL as 'private' by default
+* Use bucket name suffix
+* Use a random id suffix
+* Enable versioning
+* Prevent destroy
+* Force destroy of all objects before deletion
 
 ## Unreleased
