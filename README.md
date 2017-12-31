@@ -47,7 +47,7 @@ None
 ## Usage
 ```
 module "my_bucket" {
-  source            = "github.com/bmacauley/tf-aws-s3?ref=v0.1"
+  source            = "github.com/bmacauley/tf-aws-s3?ref=v0.2"
   bucket            = "test-bucket"
   acl               = "private"
   sse_algorithm     = "AES256"
