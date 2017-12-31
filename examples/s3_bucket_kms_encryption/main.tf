@@ -13,6 +13,7 @@ provider "aws" {
 module "my_bucket" {
   source                                      = "../../"
   bucket                                      = "test-bucket"
+  bucket_suffix                               = "example-com"
   acl                                         = "private"
   sse_algorithm                               = "aws:kms"
   enable_versioning                           = true

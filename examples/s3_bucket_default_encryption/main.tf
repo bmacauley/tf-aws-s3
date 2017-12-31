@@ -10,6 +10,7 @@ terraform {
 module "my_bucket" {
   source                                      = "../../"
   bucket                                      = "test-bucket"
+  bucket_suffix                               = "example-com"
   acl                                         = "private"
   sse_algorithm                               = "AES256"
   enable_versioning                           = true

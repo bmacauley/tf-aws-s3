@@ -35,7 +35,7 @@ variable "region" {
 
 variable "bucket_suffix" {
   description = "enable bucket name suffix eg my-bucket-suffix"
-  default     = "suffix"
+  default     = ""
 }
 
 variable "enable_random_id_suffix" {
