@@ -65,7 +65,6 @@ module "my_bucket" {
 
 ## Examples
 [s3 bucket, default encryption, AES256](/examples/s3_bucket_default_encryption)  
-
 [s3 bucket, default encryption, kms key](/examples/s3_bucket_kms_encryption)  
 
 
