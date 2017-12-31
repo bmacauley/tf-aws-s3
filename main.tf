@@ -13,35 +13,34 @@ resource "aws_s3_bucket" "b" {
   bucket        = "${local.bucket}"
   region        = "${var.region}"
   force_destroy = "${var.force_destroy}"
-  acl           = "private"
+  acl           = "${var.acl}"
+  tags          = "${local.tags}"
+
 
   versioning {
     enabled = "${var.enable_versioning}"
   }
 
-  # logging {
-  #   target_bucket = "${var.target_log_bucket}"
-  #   target_prefix = "${var.target_log_bucket_prefix}"
-  # }
 
-  tags = "${local.tags}"
-
-}
-
-# data
-data "template_file" "bucket-policy-aes256" {
-  template = "${file("${path.module}/bucket_policies/bucket-policy-aes256.tpl")}"
-  vars {
-    bucket_name = "${aws_s3_bucket.b.bucket}"
+  # default server side encryption
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "${var.sse_algorithm}"
+        kms_master_key_id = "${var.kms_master_key_id}"
+      }
+    }
   }
-}
 
-# add bucket policy to enforce encryption using AES-256
-resource "aws_s3_bucket_policy" "bp" {
-  bucket = "${aws_s3_bucket.b.id}"
-  policy = "${data.template_file.bucket-policy-aes256.rendered}"
-}
 
+  # object lifecycle rule - abort incomplete multi-part uploads
+  lifecycle_rule {
+    enabled = "${var.enable_abort_incomplete_multipart_upload}"
+    abort_incomplete_multipart_upload_days = "${var.abort_incomplete_multipart_upload_days}"
+  }
+
+
+}
 
 # generate a random alphanumeric string as a bucket suffix
 resource "random_id" "server" {
@@ -60,12 +59,14 @@ locals {
   bucket_suffix = "${var.bucket_suffix != "" ? local.bucket_suffix_hyphen: var.bucket_suffix }"
 }
 
+
 # random_id suffix, add hyphen, only use if random_id_suffix_enable=1
 locals {
-  random_id_suffix_hyphen = "-${random_id.server.hex}"
-  random_id_suffix_none = ""
-  random_id_suffix = "${var.random_id_suffix_enable == 1 ? local.random_id_suffix_hyphen : local.random_id_suffix_none }"
+  random_id = "-${random_id.server.hex}"
+  random_id_none = ""
+  random_id_suffix = "${var.enable_random_id_suffix ? local.random_id : local.random_id_none }"
 }
+
 
 # Merge bucket name + bucket_suffix + random alpha-numeric suffix
 locals {
@@ -76,11 +77,11 @@ locals {
 # Ensure that common_tags get created consistently
 locals {
   common_tags = {
-    created_by = "terraform"
-    project_id   = ""
-    project_name = ""
-    environment  = ""
-    component    = ""
+    terraform     = "true"
+    project_id    = ""
+    project_name  = ""
+    environment   = ""
+    component     = ""
   }
   common_tags_merged = "${merge(local.common_tags, var.common_tags)}"
 }
@@ -90,6 +91,4 @@ locals {
 locals {
   tags = "${merge(local.common_tags_merged, var.other_tags)}"
 }
-
-
 
